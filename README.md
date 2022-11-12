@@ -5,7 +5,7 @@ AWS_ACCESS_KEY_ID =
 AWS_SECRET_ACCESS_KEY =
 ```
 
-and these are required for normal reasons
+and these are required in this app for normal reasons
 ```
 REGION = 
 BUCKET_NAME=

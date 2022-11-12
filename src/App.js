@@ -1,23 +1,66 @@
 import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { fetchImages, uploadImage } from './fetch-utils.js';
 
 function App() {
+  async function loadImages() {
+    setLoading(true);
+    const imageData = await fetchImages();
+
+    setImages(imageData);
+    setLoading(false);
+  }
+
+  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState({});
+
+  function handleFileSelect(e) {
+    setSelectedImage(e.target.files[0]);
+  }
+
+  async function handleImageUpload(e) {
+    e.preventDefault();
+    setLoading(true);
+    await uploadImage(selectedImage);
+    setSelectedImage({});
+    await loadImages();
+    setLoading(false);
+    e.target.reset();
+  }
+
+  useEffect(() => {
+
+    if (images.length === 0) loadImages();
+  }, [images.length]);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <section>
+        <form onSubmit={handleImageUpload}>
+          <label>
+            <input type="file" onChange={handleFileSelect} />
+          </label>
+          {
+            loading 
+              ? <div className="lds-circle"><div></div></div>
+              : <button>
+                Upload Image
+              </button>
+
+          }
+        </form>
+      </section>
+      <main>
+        <h3>gallery:</h3>
+        <div className='gallery'>
+          {
+            images.map(img => 
+              <img key={img} src={img} alt={img} />)
+          }
+        </div>
+      </main>
     </div>
   );
 }
